@@ -3,6 +3,7 @@
   <button onclick="startTypewriter()" style="background:#ff4769; color:#fff; border:none; padding:6px 14px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:8px;">Read Letter ✍️</button>
 </div>
 
+<!-- Background Audio Element -->
 <audio id="bgMusic" src="song.mp3" preload="auto" loop></audio>
 
 <script>
@@ -12,9 +13,18 @@
 
   function startTypewriter() {
     const music = document.getElementById('bgMusic');
-    music.volume = 0.5;
-    music.play().catch(error => console.log("Audio error:", error));
+    
+    // Reset position and set volume
+    music.currentTime = 0;
+    music.volume = 0.8;
 
+    // Play with error handling popup
+    music.play().catch(error => {
+      console.error("Audio playback error:", error);
+      alert("Audio failed to play. Please verify that 'song.mp3' is placed in the exact same GitHub folder as your index.html file.");
+    });
+
+    // Reset typewriter text
     twIdx = 0;
     const targetEl = document.getElementById('typewriterText');
     targetEl.textContent = "";
