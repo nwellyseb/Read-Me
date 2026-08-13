@@ -35,6 +35,12 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 12px;
+      width: 100%;
+      transition: transform 0.2s ease;
+    }
+
+    .read-btn:hover {
+      transform: scale(1.02);
     }
   </style>
 </head>
@@ -45,23 +51,41 @@
     <button class="read-btn" onclick="startTypewriter()">Read Letter ✍️</button>
   </div>
 
-  <audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto" loop></audio>
+  <!-- Hidden YouTube Audio Player -->
+  <div id="ytPlayer" style="display:none;"></div>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
+    let player;
+
+    // Load Sailor Song by Gigi Perez via YouTube API
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('ytPlayer', {
+        height: '0',
+        width: '0',
+        videoId: '3zKXfZXl_4g',
+        playerVars: {
+          'autoplay': 0,
+          'controls': 0,
+          'loop': 1,
+          'playlist': '3zKXfZXl_4g'
+        }
+      });
+    }
+
     const letterStr = "Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕";
     let twIdx = 0;
     let twInterval = null;
 
     function startTypewriter() {
-      const music = document.getElementById('bgMusic');
-      music.volume = 1.0;
-
-      // Play audio and show alert if blocked
-      music.play().then(() => {
-        console.log("Audio is playing successfully.");
-      }).catch(error => {
-        alert("Browser blocked audio: " + error.message);
-      });
+      // Play background song reliably via YouTube
+      if (player && typeof player.playVideo === 'function') {
+        player.unMute();
+        player.setVolume(100);
+        player.playVideo();
+      }
 
       twIdx = 0;
       const targetEl = document.getElementById('typewriterText');
