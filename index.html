@@ -39,12 +39,6 @@
       margin-top: 20px;
       width: 100%;
       font-size: 16px;
-      transition: transform 0.2s ease, background-color 0.2s ease;
-    }
-
-    .read-btn:hover {
-      background: #ff2a51;
-      transform: scale(1.02);
     }
 
     #typewriterText {
@@ -65,16 +59,36 @@
     <button class="read-btn" id="btn" onclick="startTypewriter()">Read Letter ✍️</button>
   </div>
 
-  <!-- Reliable CDN Stream for Sailor Song by Gigi Perez -->
-  <audio id="bgMusic" src="https://ia801503.us.archive.org/15/items/gigi-perez-sailor-song/Gigi%20Perez%20-%20Sailor%20Song.mp3" preload="auto" loop></audio>
-
   <script>
-    const music = document.getElementById('bgMusic');
+    // Built-in Music Box Synthesizer (Zero network required)
+    function playMusicBoxMelody() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioContext();
 
-    // Force pre-buffer when the page opens
-    window.addEventListener('load', () => {
-      music.load();
-    });
+      const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 329.63, 293.66];
+      let noteIndex = 0;
+
+      function playNote() {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(notes[noteIndex], ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 1.2);
+
+        noteIndex = (noteIndex + 1) % notes.length;
+      }
+
+      setInterval(playNote, 600);
+    }
 
     const letterStr = `Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕🥺🥺.
 
@@ -93,18 +107,9 @@ Excited na ako sa mga susunod na chapters ng buhay natin na magkasama. Mahal na 
     function startTypewriter() {
       document.getElementById('btn').style.display = 'none';
 
-      music.volume = 1.0;
-      
-      // Play audio cleanly on user gesture
-      const playPromise = music.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log("Audio play caught:", error);
-          setTimeout(() => { music.play(); }, 200);
-        });
-      }
+      // Start internal audio generator
+      playMusicBoxMelody();
 
-      // Sync typewriter to 193-second runtime
       const speed = (songDurationSeconds * 1000) / letterStr.length;
 
       twIdx = 0;
