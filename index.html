@@ -35,11 +35,6 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 12px;
-      transition: transform 0.2s ease;
-    }
-
-    .read-btn:hover {
-      transform: scale(1.05);
     }
   </style>
 </head>
@@ -50,7 +45,6 @@
     <button class="read-btn" onclick="startTypewriter()">Read Letter ✍️</button>
   </div>
 
-  <!-- Direct Web Audio Link for Sailor Song -->
   <audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto" loop></audio>
 
   <script>
@@ -62,15 +56,13 @@
       const music = document.getElementById('bgMusic');
       music.volume = 1.0;
 
-      // Force play on user button click
-      const playPromise = music.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.error("Audio playback error:", error);
-        });
-      }
+      // Play audio and show alert if blocked
+      music.play().then(() => {
+        console.log("Audio is playing successfully.");
+      }).catch(error => {
+        alert("Browser blocked audio: " + error.message);
+      });
 
-      // Typewriter animation
       twIdx = 0;
       const targetEl = document.getElementById('typewriterText');
       targetEl.textContent = "";
