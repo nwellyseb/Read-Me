@@ -1,5 +1,5 @@
 <div style="background:#fff; border:1px dashed #ff8fa3; padding:16px; border-radius:16px; text-align:left;">
-  <p id="typewriterText" style="font-size:14px; color:#444; line-height:1.5; font-family:monospace; min-height:60px;"></p>
+  <p id="typewriterText" style="font-size:14px; color:#444; line-height:1.5; font-family:monospace; min-height:60px; white-space: pre-wrap;"></p>
   <button onclick="startTypewriter()" style="background:#ff4769; color:#fff; border:none; padding:6px 14px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:8px;">Read Letter ✍️</button>
 </div>
 
@@ -12,17 +12,18 @@
   let twInterval = null;
 
   function startTypewriter() {
-    // Play background music when button is clicked
+    // Play background music on click
     const music = document.getElementById('bgMusic');
     music.play().catch(error => console.log("Audio playback failed:", error));
 
-    // Reset typewriter text if clicked again
+    // Reset typewriter text
     twIdx = 0;
-    document.getElementById('typewriterText').innerText = "";
+    const targetEl = document.getElementById('typewriterText');
+    targetEl.textContent = "";
     if (twInterval) clearInterval(twInterval);
 
     twInterval = setInterval(() => {
-      document.getElementById('typewriterText').innerText += letterStr.charAt(twIdx);
+      targetEl.textContent += letterStr.charAt(twIdx);
       twIdx++;
       if (twIdx >= letterStr.length) clearInterval(twInterval);
     }, 50);
