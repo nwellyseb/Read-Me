@@ -39,6 +39,12 @@
       margin-top: 20px;
       width: 100%;
       font-size: 16px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .read-btn:hover {
+      background: #ff2a51;
+      transform: scale(1.02);
     }
 
     #typewriterText {
@@ -50,6 +56,12 @@
       white-space: pre-wrap;
       margin: 0;
     }
+
+    audio {
+      width: 100%;
+      margin-top: 15px;
+      height: 36px;
+    }
   </style>
 </head>
 <body>
@@ -57,38 +69,21 @@
   <div class="letter-card">
     <p id="typewriterText"></p>
     <button class="read-btn" id="btn" onclick="startTypewriter()">Read Letter ✍️</button>
+
+    <!-- Visible Audio Controls (Fallback) -->
+    <audio id="bgMusic" controls loop preload="auto">
+      <source src="https://ia801503.us.archive.org/15/items/gigi-perez-sailor-song/Gigi%20Perez%20-%20Sailor%20Song.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
   </div>
 
   <script>
-    // Built-in Music Box Synthesizer (Zero network required)
-    function playMusicBoxMelody() {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      const ctx = new AudioContext();
+    const music = document.getElementById('bgMusic');
 
-      const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 329.63, 293.66];
-      let noteIndex = 0;
-
-      function playNote() {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(notes[noteIndex], ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 1.2);
-
-        noteIndex = (noteIndex + 1) % notes.length;
-      }
-
-      setInterval(playNote, 600);
-    }
+    // Pre-buffer file on page load
+    window.addEventListener('load', () => {
+      music.load();
+    });
 
     const letterStr = `Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕🥺🥺.
 
@@ -100,16 +95,20 @@ And now na nasaken ka na, hinding hindi na kita bibitawan. Mahal na mahal kita s
 
 Excited na ako sa mga susunod na chapters ng buhay natin na magkasama. Mahal na mahal kita, darling, higit pa sa kaya kong sabihin. 😊😊☺️🥰🥰`;
 
+    // 193 seconds = duration of Sailor Song
     const songDurationSeconds = 193; 
     let twIdx = 0;
     let twInterval = null;
 
     function startTypewriter() {
+      // Hide the Read button on tap
       document.getElementById('btn').style.display = 'none';
 
-      // Start internal audio generator
-      playMusicBoxMelody();
+      // Unmute & start playback
+      music.volume = 1.0;
+      music.play().catch(e => console.log("Manual play required:", e));
 
+      // Calculate speed so typewriter finishes exactly with the track (~140ms per letter)
       const speed = (songDurationSeconds * 1000) / letterStr.length;
 
       twIdx = 0;
