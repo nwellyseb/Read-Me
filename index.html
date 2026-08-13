@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Para sa Mahal Ko 💕</title>
+  <title>Letter for You 💕</title>
   <style>
     body {
       background: linear-gradient(135deg, #ffe6ea 0%, #ffc2d1 100%);
@@ -65,7 +65,16 @@
     <button class="read-btn" id="btn" onclick="startTypewriter()">Read Letter ✍️</button>
   </div>
 
+  <audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto" loop></audio>
+
   <script>
+    const music = document.getElementById('bgMusic');
+    
+    // Explicitly command Safari to load the file as soon as the page opens
+    window.addEventListener('load', () => {
+      music.load();
+    });
+
     const letterStr = `Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕🥺🥺.
 
 Sobrang mahal na mahal kita darling. I just can't be the person that I am today kasi maradi pa kong mga bagay na hindi naibibigay sayo. Pero mahal, pagsisikapan ko 🥺. Wag ka lang mawala saken mahal 🥺 mahal na mahal kita sobra.
@@ -76,36 +85,41 @@ And now na nasaken ka na, hinding hindi na kita bibitawan. Mahal na mahal kita s
 
 Excited na ako sa mga susunod na chapters ng buhay natin na magkasama. Mahal na mahal kita, darling, higit pa sa kaya kong sabihin. 😊😊☺️🥰🥰`;
 
+    // 193 seconds = duration of Sailor Song
     const songDurationSeconds = 193; 
     let twIdx = 0;
     let twInterval = null;
 
     function startTypewriter() {
-      // Create audio object synchronously inside the button click gesture
-      const song = new Audio('song.mp3');
-      song.volume = 1.0;
-      
-      song.play().catch(err => {
-        console.error("Audio playback error:", err);
-      });
-
-      // Hide button
+      // Hide button when clicked
       document.getElementById('btn').style.display = 'none';
+
+      // Force play and catch any browser abortion silently
+      music.volume = 1.0;
+      
+      const playPromise = music.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log("Playback delayed or blocked by browser:", error);
+          // Retry playback after a short 300ms pause if aborted
+          setTimeout(() => {
+            music.play().catch(e => console.log("Retry failed:", e));
+          }, 300);
+        });
+      }
+
+      // Dynamic typewriter speed (~140ms per letter to sync with full song runtime)
+      const speed = (songDurationSeconds * 1000) / letterStr.length;
 
       twIdx = 0;
       const targetEl = document.getElementById('typewriterText');
       targetEl.textContent = "";
       if (twInterval) clearInterval(twInterval);
 
-      const speed = (songDurationSeconds * 1000) / letterStr.length;
-
       twInterval = setInterval(() => {
         twIdx++;
         targetEl.textContent = letterStr.slice(0, twIdx);
-        
-        if (twIdx >= letterStr.length) {
-          clearInterval(twInterval);
-        }
+        if (twIdx >= letterStr.length) clearInterval(twInterval);
       }, speed);
     }
   </script>
