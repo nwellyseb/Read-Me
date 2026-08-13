@@ -50,8 +50,7 @@
     <button class="read-btn" onclick="startTypewriter()">Read Letter ✍️</button>
   </div>
 
-  <!-- Direct Web Audio Link -->
-  <audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto" loop></audio>
+  <audio id="bgMusic" src="song.mp3" preload="auto" loop></audio>
 
   <script>
     const letterStr = "Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕";
@@ -60,10 +59,12 @@
 
     function startTypewriter() {
       const music = document.getElementById('bgMusic');
-      music.volume = 0.8;
+      music.currentTime = 0;
+      music.volume = 1.0;
       
-      // Play background music
-      music.play().catch(error => console.log("Audio playback error:", error));
+      music.play().catch(error => {
+        console.error("Audio playback error:", error);
+      });
 
       twIdx = 0;
       const targetEl = document.getElementById('typewriterText');
