@@ -3,8 +3,7 @@
   <button onclick="startTypewriter()" style="background:#ff4769; color:#fff; border:none; padding:6px 14px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:8px;">Read Letter ✍️</button>
 </div>
 
-<!-- Background Audio -->
-<audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto" loop></audio>
+<audio id="bgMusic" src="song.mp3" preload="auto" loop></audio>
 
 <script>
   const letterStr = "Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕";
@@ -12,18 +11,15 @@
   let twInterval = null;
 
   function startTypewriter() {
-    // Start playing background music
     const music = document.getElementById('bgMusic');
-    music.volume = 0.5; // Adjust volume (0.0 to 1.0)
-    music.play().catch(error => console.log("Audio playback error:", error));
+    music.volume = 0.5;
+    music.play().catch(error => console.log("Audio error:", error));
 
-    // Reset typewriter
     twIdx = 0;
     const targetEl = document.getElementById('typewriterText');
     targetEl.textContent = "";
     if (twInterval) clearInterval(twInterval);
 
-    // Render using string slice to preserve exact spacing
     twInterval = setInterval(() => {
       twIdx++;
       targetEl.textContent = letterStr.slice(0, twIdx);
