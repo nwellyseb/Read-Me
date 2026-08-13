@@ -70,9 +70,9 @@
     <p id="typewriterText"></p>
     <button class="read-btn" id="btn" onclick="startTypewriter()">Read Letter ✍️</button>
 
-    <!-- Visible Audio Controls (Fallback) -->
+    <!-- Sailor Song by Gigi Perez -->
     <audio id="bgMusic" controls loop preload="auto">
-      <source src="https://ia801503.us.archive.org/15/items/gigi-perez-sailor-song/Gigi%20Perez%20-%20Sailor%20Song.mp3" type="audio/mpeg">
+      <source src="https://files.catbox.moe/55hhze.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
   </div>
@@ -80,7 +80,7 @@
   <script>
     const music = document.getElementById('bgMusic');
 
-    // Pre-buffer file on page load
+    // Pre-buffer the song on page load
     window.addEventListener('load', () => {
       music.load();
     });
@@ -95,20 +95,20 @@ And now na nasaken ka na, hinding hindi na kita bibitawan. Mahal na mahal kita s
 
 Excited na ako sa mga susunod na chapters ng buhay natin na magkasama. Mahal na mahal kita, darling, higit pa sa kaya kong sabihin. 😊😊☺️🥰🥰`;
 
-    // 193 seconds = duration of Sailor Song
-    const songDurationSeconds = 193; 
+    // Sailor Song full duration: 3 minutes 31 seconds = 211 seconds
+    const songDurationSeconds = 211; 
     let twIdx = 0;
     let twInterval = null;
 
     function startTypewriter() {
-      // Hide the Read button on tap
+      // Hide button
       document.getElementById('btn').style.display = 'none';
 
-      // Unmute & start playback
+      // Start music playback
       music.volume = 1.0;
       music.play().catch(e => console.log("Manual play required:", e));
 
-      // Calculate speed so typewriter finishes exactly with the track (~140ms per letter)
+      // Calculate speed so typewriter finishes at the exact end of the song (~153ms per character)
       const speed = (songDurationSeconds * 1000) / letterStr.length;
 
       twIdx = 0;
