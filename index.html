@@ -1,39 +1,82 @@
-<div style="background:#fff; border:1px dashed #ff8fa3; padding:16px; border-radius:16px; text-align:left;">
-  <p id="typewriterText" style="font-size:14px; color:#444; line-height:1.5; font-family:monospace; min-height:60px; white-space: pre-wrap;"></p>
-  <button onclick="startTypewriter()" style="background:#ff4769; color:#fff; border:none; padding:6px 14px; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:8px;">Read Letter ✍️</button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letter for You 💕</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #ffe6ea 0%, #ffc2d1 100%);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+    }
 
-<!-- Background Audio Element -->
-<audio id="bgMusic" src="song.mp3" preload="auto" loop></audio>
+    .letter-card {
+      background: #fff;
+      border: 1px dashed #ff8fa3;
+      padding: 24px;
+      border-radius: 16px;
+      text-align: left;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(255, 143, 163, 0.2);
+    }
 
-<script>
-  const letterStr = "Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕";
-  let twIdx = 0;
-  let twInterval = null;
+    .read-btn {
+      background: #ff4769;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: transform 0.2s ease;
+    }
 
-  function startTypewriter() {
-    const music = document.getElementById('bgMusic');
-    
-    // Reset position and set volume
-    music.currentTime = 0;
-    music.volume = 0.8;
+    .read-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
 
-    // Play with error handling popup
-    music.play().catch(error => {
-      console.error("Audio playback error:", error);
-      alert("Audio failed to play. Please verify that 'song.mp3' is placed in the exact same GitHub folder as your index.html file.");
-    });
+  <div class="letter-card">
+    <p id="typewriterText" style="font-size:14px; color:#444; line-height:1.6; font-family:monospace; min-height:60px; white-space: pre-wrap; margin:0;"></p>
+    <button class="read-btn" onclick="startTypewriter()">Read Letter ✍️</button>
+  </div>
 
-    // Reset typewriter text
-    twIdx = 0;
-    const targetEl = document.getElementById('typewriterText');
-    targetEl.textContent = "";
-    if (twInterval) clearInterval(twInterval);
+  <!-- Direct Web Audio Link -->
+  <audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto" loop></audio>
 
-    twInterval = setInterval(() => {
-      twIdx++;
-      targetEl.textContent = letterStr.slice(0, twIdx);
-      if (twIdx >= letterStr.length) clearInterval(twInterval);
-    }, 50);
-  }
-</script>
+  <script>
+    const letterStr = "Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕";
+    let twIdx = 0;
+    let twInterval = null;
+
+    function startTypewriter() {
+      const music = document.getElementById('bgMusic');
+      music.volume = 0.8;
+      
+      // Play background music
+      music.play().catch(error => console.log("Audio playback error:", error));
+
+      twIdx = 0;
+      const targetEl = document.getElementById('typewriterText');
+      targetEl.textContent = "";
+      if (twInterval) clearInterval(twInterval);
+
+      twInterval = setInterval(() => {
+        twIdx++;
+        targetEl.textContent = letterStr.slice(0, twIdx);
+        if (twIdx >= letterStr.length) clearInterval(twInterval);
+      }, 50);
+    }
+  </script>
+
+</body>
+</html>
