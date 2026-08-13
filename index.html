@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Letter for You 💕</title>
+  <title>Para sa Mahal Ko 💕</title>
   <style>
     body {
       background: linear-gradient(135deg, #ffe6ea 0%, #ffc2d1 100%);
@@ -13,80 +13,108 @@
       justify-content: center;
       align-items: center;
       font-family: sans-serif;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .letter-card {
       background: #fff;
       border: 1px dashed #ff8fa3;
-      padding: 24px;
-      border-radius: 16px;
+      padding: 28px;
+      border-radius: 20px;
       text-align: left;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 10px 25px rgba(255, 143, 163, 0.2);
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(255, 143, 163, 0.25);
     }
 
     .read-btn {
       background: #ff4769;
       color: #fff;
       border: none;
-      padding: 10px 18px;
-      border-radius: 12px;
+      padding: 12px 20px;
+      border-radius: 14px;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 12px;
+      margin-top: 20px;
       width: 100%;
-      font-size: 15px;
+      font-size: 16px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .read-btn:hover {
+      background: #ff2a51;
+      transform: scale(1.02);
+    }
+
+    #typewriterText {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.7;
+      font-family: monospace;
+      min-height: 120px;
+      white-space: pre-wrap;
+      margin: 0;
     }
   </style>
 </head>
 <body>
 
   <div class="letter-card">
-    <p id="typewriterText" style="font-size:14px; color:#444; line-height:1.6; font-family:monospace; min-height:60px; white-space: pre-wrap; margin:0;"></p>
+    <p id="typewriterText"></p>
     <button class="read-btn" id="btn" onclick="startTypewriter()">Read Letter ✍️</button>
   </div>
 
-  <audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto" loop></audio>
+  <audio id="bgMusic" src="https://files.catbox.moe/55hhze.mp3" preload="auto"></audio>
 
   <script>
     const music = document.getElementById('bgMusic');
     
-    // Explicitly command Safari to load the file as soon as the page opens
+    // Ensure Safari pre-buffers audio file
     window.addEventListener('load', () => {
       music.load();
     });
 
-    const letterStr = "Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕";
+    // Your complete letter text
+    const letterStr = `Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕🥺🥺.
+
+Sobrang mahal na mahal kita darling. I just can't be the person that I am today kasi maradi pa kong mga bagay na hindi naibibigay sayo. Pero mahal, pagsisikapan ko 🥺. Wag ka lang mawala saken mahal 🥺 mahal na mahal kita sobra.
+
+Naalala ko na naman dati ulit kung paano tayo nag simula 🥺. Naalala mo pa ba? Kung paano nagsimula ang conversation natin 😅. Papansin ako dati mahal pero ikaw parin nag add saken sa Facebook. Hahahaha pero mahal, everytime naiisip ko yun para akong kinikilabutan na natatakot. I keep on imagining about "paano kung di talaga ako nagchat sayo sa story mo sa Facebook no? Knowing na hindi ka active sa instagram. Paano kung may ibang tao nag chat sayo non tapos naunahan ako sayo 🥺. But you know what. God made it happen 🥺🥺🥺🥺. Sobrang saya ko mahal sobraaa.
+
+And now na nasaken ka na, hinding hindi na kita bibitawan. Mahal na mahal kita sobra. Sobra Sobra. Kaya huwag ka nang mag-alala, ha? Hindi ako mawawala. Heto na ako, habambuhay na nakatali sa'yo. Sobrang thankful ako kay God kasi sa dinami-dami ng tao sa mundo, tayo ang pinagtagpo. Mahal na mahal kita, sobra-sobra.
+
+Excited na ako sa mga susunod na chapters ng buhay natin na magkasama. Mahal na mahal kita, darling, higit pa sa kaya kong sabihin. 😊😊☺️🥰🥰`;
+
+    // 193 seconds = full duration of Sailor Song
+    const songDurationSeconds = 193; 
+
     let twIdx = 0;
     let twInterval = null;
 
     function startTypewriter() {
-      // Force play and catch any browser abortion silently
-      music.volume = 1.0;
-      
-      const playPromise = music.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log("Playback delayed or blocked by browser:", error);
-          // Retry playback after a short 300ms pause if aborted
-          setTimeout(() => {
-            music.play().catch(e => console.log("Retry failed:", e));
-          }, 300);
-        });
-      }
+      // Hide button once clicked
+      document.getElementById('btn').style.display = 'none';
 
-      // Typewriter Animation
+      music.volume = 1.0;
+      music.play().catch(e => console.log("Audio play caught:", e));
+
       twIdx = 0;
       const targetEl = document.getElementById('typewriterText');
       targetEl.textContent = "";
       if (twInterval) clearInterval(twInterval);
 
+      // Calculates ~140ms per letter dynamically to perfectly match the 3:13 track runtime
+      const speed = (songDurationSeconds * 1000) / letterStr.length;
+
       twInterval = setInterval(() => {
         twIdx++;
         targetEl.textContent = letterStr.slice(0, twIdx);
-        if (twIdx >= letterStr.length) clearInterval(twInterval);
-      }, 50);
+        
+        if (twIdx >= letterStr.length) {
+          clearInterval(twInterval);
+        }
+      }, speed);
     }
   </script>
 
