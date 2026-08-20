@@ -1,3 +1,6 @@
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +19,7 @@
       padding: 20px;
       box-sizing: border-box;
     }
-
+ 
     .letter-card {
       background: #fff;
       border: 1px dashed #ff8fa3;
@@ -27,7 +30,7 @@
       width: 100%;
       box-shadow: 0 10px 30px rgba(255, 143, 163, 0.25);
     }
-
+ 
     .read-btn {
       background: #ff4769;
       color: #fff;
@@ -41,12 +44,18 @@
       font-size: 16px;
       transition: transform 0.2s ease, background-color 0.2s ease;
     }
-
+ 
     .read-btn:hover {
       background: #ff2a51;
       transform: scale(1.02);
     }
-
+ 
+    .read-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+    }
+ 
     #typewriterText {
       font-size: 14px;
       color: #333;
@@ -56,8 +65,9 @@
       white-space: pre-wrap;
       margin: 0;
     }
-
-    /* Hidden YouTube player container */
+ 
+    /* Hidden YouTube player container — the API replaces this div with
+       its own iframe once onYouTubeIframeAPIReady fires */
     #youtube-audio-container {
       position: absolute;
       width: 1px;
@@ -69,51 +79,93 @@
   </style>
 </head>
 <body>
-
+ 
   <div class="letter-card">
     <p id="typewriterText"></p>
     <button class="read-btn" id="btn" onclick="startTypewriter()">Read Letter ✍️</button>
   </div>
-
-  <!-- Hidden iframe for YouTube audio stream -->
+ 
+  <!-- Placeholder the YouTube IFrame API will turn into a real player -->
   <div id="youtube-audio-container">
-    <iframe id="ytPlayer" width="200" height="200" src="https://www.youtube.com/embed/xryC4J3Aio8?enablejsapi=1&autoplay=0&loop=1&playlist=xryC4J3Aio8" frameborder="0" allow="autoplay"></iframe>
+    <div id="ytPlayer"></div>
   </div>
-
+ 
   <script>
     const letterStr = `Mahal ko, sobrang thank you kasi kahit madaming beses na akong naging unreasonable sa mga away natin, di moko sinukuan. Siguro naisip mo na akong iwanan no? Yet, tayo parin hanggang ngayon mahal. Sobrang thankful ako sayo sobra💕🥺🥺.
-
+ 
 Sobrang mahal na mahal kita darling. I just can't be the person that I am today kasi maradi pa kong mga bagay na hindi naibibigay sayo. Pero mahal, pagsisikapan ko 🥺. Wag ka lang mawala saken mahal 🥺 mahal na mahal kita sobra.
-
+ 
 Naalala ko na naman dati ulit kung paano tayo nag simula 🥺. Naalala mo pa ba? Kung paano nagsimula ang conversation natin 😅. Papansin ako dati mahal pero ikaw parin nag add saken sa Facebook. Hahahaha pero mahal, everytime naiisip ko yun para akong kinikilabutan na natatakot. I keep on imagining about "paano kung di talaga ako nagchat sayo sa story mo sa Facebook no? Knowing na hindi ka active sa instagram. Paano kung may ibang tao nag chat sayo non tapos naunahan ako sayo 🥺. But you know what. God made it happen 🥺🥺🥺🥺. Sobrang saya ko mahal sobraaa.
-
+ 
 And now na nasaken ka na, hinding hindi na kita bibitawan. Mahal na mahal kita sobra. Sobra Sobra. Kaya huwag ka nang mag-alala, ha? Hindi ako mawawala. Heto na ako, habambuhay na nakatali sa'yo. Sobrang thankful ako kay God kasi sa dinami-dami ng tao sa mundo, tayo ang pinagtagpo. Mahal na mahal kita, sobra-sobra.
-
+ 
 Excited na ako sa mga susunod na chapters ng buhay natin na magkasama. Mahal na mahal kita, darling, higit pa sa kaya kong sabihin. 😊😊☺️🥰🥰`;
-
+ 
     // Sailor Song duration: 211 seconds
-    const songDurationSeconds = 211; 
+    const songDurationSeconds = 211;
     let twIdx = 0;
     let twInterval = null;
-
+ 
+    // --- YouTube IFrame Player API setup ---
+    // Loaded async; YouTube calls window.onYouTubeIframeAPIReady itself
+    // once the API script has finished loading.
+    let ytPlayer = null;
+    let ytReady = false;
+    let pendingPlay = false; // true if the user clicked before the API was ready
+ 
+    (function loadYouTubeAPI() {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    })();
+ 
+    window.onYouTubeIframeAPIReady = function () {
+      ytPlayer = new YT.Player('ytPlayer', {
+        height: '200',
+        width: '200',
+        videoId: 'xryC4J3Aio8',
+        playerVars: {
+          autoplay: 0,
+          loop: 1,
+          playlist: 'xryC4J3Aio8', // required by YouTube for loop:1 to work
+          controls: 0
+        },
+        events: {
+          onReady: function () {
+            ytReady = true;
+            if (pendingPlay) playMusic();
+          }
+        }
+      });
+    };
+ 
+    function playMusic() {
+      if (!ytReady || !ytPlayer) {
+        pendingPlay = true; // API/player not ready yet — play as soon as onReady fires
+        return;
+      }
+      ytPlayer.unMute();
+      ytPlayer.setVolume(100);
+      ytPlayer.playVideo();
+    }
+ 
     function startTypewriter() {
       // Hide the read button
-      document.getElementById('btn').style.display = 'none';
-
-      // Send command to the YouTube iframe to play the audio
-      const iframe = document.getElementById('ytPlayer');
-      iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
-      iframe.contentWindow.postMessage('{"event":"command","func":"setVolume","args":[100]}', '*');
-      iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-
+      const btn = document.getElementById('btn');
+      btn.disabled = true;
+      btn.style.display = 'none';
+ 
+      // Kick off (or queue) the background music
+      playMusic();
+ 
       // Calculate typewriter delay sync (~153ms per character)
       const speed = (songDurationSeconds * 1000) / letterStr.length;
-
+ 
       twIdx = 0;
       const targetEl = document.getElementById('typewriterText');
       targetEl.textContent = "";
       if (twInterval) clearInterval(twInterval);
-
+ 
       twInterval = setInterval(() => {
         twIdx++;
         targetEl.textContent = letterStr.slice(0, twIdx);
@@ -121,6 +173,7 @@ Excited na ako sa mga susunod na chapters ng buhay natin na magkasama. Mahal na 
       }, speed);
     }
   </script>
-
+ 
 </body>
 </html>
+ 
