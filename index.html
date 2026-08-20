@@ -64,13 +64,17 @@
     }
 
     /* Hidden YouTube player container — the API replaces this div with
-       its own iframe once onYouTubeIframeAPIReady fires */
+       its own iframe once onYouTubeIframeAPIReady fires. overflow:hidden
+       plus the offscreen positioning below guarantees no visible video
+       ever shows, regardless of the player's internal iframe size. */
     #youtube-audio-container {
       position: absolute;
       width: 1px;
       height: 1px;
       left: -9999px;
+      top: -9999px;
       opacity: 0;
+      overflow: hidden;
       pointer-events: none;
     }
   </style>
